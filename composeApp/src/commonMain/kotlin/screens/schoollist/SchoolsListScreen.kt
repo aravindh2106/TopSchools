@@ -2,16 +2,21 @@ package screens.schoollist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,15 +37,12 @@ import database.School
 import database.SchoolDao
 import screens.schooldetails.SchoolDetailsScreen
 
-
 data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
     @Composable
     override fun Content() {
-        // Create an instance of SchoolListScreenModel
         val schoolListScreenModel = remember { SchoolListScreenModel(schoolDao) }
         val navigator = LocalNavigator.currentOrThrow
         SchoolList(
-            schoolDao = schoolDao,
             screenModel = schoolListScreenModel,
             onItemClick = {
                 navigator.push(SchoolDetailsScreen)
@@ -51,73 +53,45 @@ data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
 
 @Composable
 fun SchoolList(
-    schoolDao: SchoolDao,
     screenModel: SchoolListScreenModel,
     onItemClick: () -> Unit
 ) {
     val offset = Offset(5.0f, 10.0f)
     val schoolList by screenModel.schools.collectAsState()
-    LaunchedEffect(true) {
-        val schools = listOf(
-            School(
-                schoolName = "Ryan International School",
-                city = "Chennai",
-                description = ""
-            ),
-            School(
-                schoolName = "Air Force School",
-                city = "Thanjavur",
-                description = ""
-            ),
-            School(
-                schoolName = "Orchids The International School",
-                city = "Bangalore",
-                description = ""
-            ),
-            School(
-                schoolName = "Orchids The International School",
-                city = "Hydrabad",
-                description = ""
-            ),
-            School(
-                schoolName = "National Public School",
-                city = "Pune",
-                description = ""
-            ),
-            School(
-                schoolName = "Maharishi Vidya Mandir",
-                city = "Mumbai",
-                description = ""
-            ), School(
-                schoolName = "Chinmaya Vidyalaya, Anna Nagar",
-                city = "Kolkata",
-                description = ""
-            )
-        )
-        schools.forEach {
-            schoolDao.upsert(it)
-        }
-    }
-    Column(
-        Modifier.fillMaxWidth()
-            .background(Color(0xFFe8f5c4)),
-        horizontalAlignment = Alignment.CenterHorizontally
+
+
+    Box(
+        Modifier.fillMaxSize()
     ) {
-        Text(
-            "Top best schools",
-            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-            color = Color.Blue,
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold,
-            style = TextStyle(
-                fontSize = 24.sp,
-                shadow = Shadow(
-                    color = Color.Gray, offset = offset, blurRadius = 3f
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFe8f5c4)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Top best schools",
+                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                color = Color.Blue,
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    shadow = Shadow(
+                        color = Color.Gray, offset = offset, blurRadius = 3f
+                    )
                 )
             )
-        )
-
-        NameCardList(schools = schoolList, onClick = { onItemClick() })
+            NameCardList(schools = schoolList, onClick = { onItemClick() })
+        }
+        FloatingActionButton(
+            onClick = { },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Add")
+        }
     }
 }
 
@@ -126,7 +100,8 @@ fun CardItem(name: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp).clickable {
+            .padding(8.dp)
+            .clickable {
                 onClick()
             },
         elevation = 4.dp
