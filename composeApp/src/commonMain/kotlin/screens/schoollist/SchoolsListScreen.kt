@@ -1,16 +1,21 @@
 package screens.schoollist
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -29,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,8 +45,11 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import database.School
 import database.SchoolDao
+import org.jetbrains.compose.resources.painterResource
 import screens.addschooldetails.AddSchoolDetailsScreen
 import screens.schooldetails.SchoolDetailsScreen
+import topschools.composeapp.generated.resources.Res
+import topschools.composeapp.generated.resources.undraw_empty_re_opql
 
 data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
     @Composable
@@ -101,18 +110,7 @@ fun SchoolList(
                 )
             )
             if (schoolList.isNullOrEmpty()) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                ) {
-                    Text(
-                        "No schools found",
-                        modifier = Modifier.align(Alignment.Center),
-                        color = Color.Black,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                NoDataCard()
             } else {
                 NameCardList(schools = schoolList, onClick = onItemClick)
             }
@@ -147,6 +145,46 @@ fun CardItem(name: String, onClick: () -> Unit) {
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(16.dp)
         )
+    }
+}
+
+@Composable
+fun NoDataCard() {
+
+    Box(
+        Modifier
+            .fillMaxSize()
+    ) {
+        Card(
+            shape = RoundedCornerShape(
+                topStart = 8.dp,
+                topEnd = 8.dp,
+                bottomEnd = 8.dp,
+                bottomStart = 8.dp
+            ),
+            modifier = Modifier.wrapContentSize()
+                .padding(8.dp).align(Alignment.Center),
+            elevation = 8.dp
+        ) {
+            Column(
+                Modifier
+                    .wrapContentSize().padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.undraw_empty_re_opql),
+                    contentDescription = "",
+                    modifier = Modifier.size(128.dp), // adjust size as needed
+                    contentScale = ContentScale.Crop // adjust scaling as needed
+                )
+                Spacer(Modifier.padding(5.dp))
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = "No schools found",
+                    style = MaterialTheme.typography.h6,
+                )
+            }
+        }
     }
 }
 
