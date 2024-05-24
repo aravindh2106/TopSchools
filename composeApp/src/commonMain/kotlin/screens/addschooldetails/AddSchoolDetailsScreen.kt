@@ -1,5 +1,6 @@
 package screens.addschooldetails
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
@@ -28,10 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,7 +54,6 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
     val schoolView = addSchoolDetailsScreenModel.schoolView.collectAsState().value
     val schoolErrorView = addSchoolDetailsScreenModel.schoolErrorView.collectAsState().value
     val isSuccess = addSchoolDetailsScreenModel.isSuccess.collectAsState().value
-    val offset = Offset(5.0f, 10.0f)
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -74,7 +72,7 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
         }
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxSize().background(Color(0xFFFED8B1))
         ) {
             IconButton(
                 onClick = onBackClick,
@@ -91,15 +89,9 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
                 Text(
                     "Fill the school details",
                     modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-                    color = Color.Blue,
+                    color = Color.Black,
                     fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        fontSize = 24.sp,
-                        shadow = Shadow(
-                            color = Color.Gray, offset = offset, blurRadius = 3f
-                        )
-                    )
+                    fontWeight = FontWeight.Bold
                 )
 
                 OutlinedTextField(
@@ -116,13 +108,14 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
                     },
                     placeholder = { Text(text = "School name") },
                     modifier = Modifier
-                        .padding(8.dp),
+                        .padding(8.dp).background(Color.White),
                     trailingIcon = {
                         if (schoolErrorView.isSchoolNameError) {
                             Icon(Icons.Filled.Info, "Error", tint = MaterialTheme.colors.error)
                         }
                     },
-                    isError = schoolErrorView.isSchoolNameError
+                    isError = schoolErrorView.isSchoolNameError,
+
                 )
                 if (schoolErrorView.isSchoolNameError) {
                     Text(
@@ -153,7 +146,7 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
                     },
                     isError = schoolErrorView.isDescriptionNameError,
                     modifier = Modifier
-                        .padding(8.dp)
+                        .padding(8.dp).background(Color.White)
                 )
                 if (schoolErrorView.isDescriptionNameError) {
                     Text(
@@ -178,7 +171,7 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
                     },
                     placeholder = { Text(text = "City") },
                     modifier = Modifier
-                        .padding(8.dp),
+                        .padding(8.dp).background(Color.White),
                     trailingIcon = {
                         if (schoolErrorView.isCityNameError) {
                             Icon(Icons.Filled.Info, "Error", tint = MaterialTheme.colors.error)
@@ -201,11 +194,11 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
                         addSchoolDetailsScreenModel.saveSchool()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(0xFFe8f5c4), // Set the background color
-                        contentColor = Color.Black   // Set the text color
+                        backgroundColor = Color(0xFF6F4E37),
+                        contentColor = Color.White
                     )
                 ) {
-                    Text("SAVE", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    Text("SAVE", fontSize = 24.sp)
                 }
             }
         }

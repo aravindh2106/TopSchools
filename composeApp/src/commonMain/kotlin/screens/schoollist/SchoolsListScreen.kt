@@ -4,17 +4,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -65,34 +69,61 @@ fun SchoolList(
     val schoolList by screenModel.schools.collectAsState()
 
     Box(
-        Modifier.fillMaxSize()
+        Modifier.fillMaxSize().background(Color(0xFFFED8B1))
     ) {
+        IconButton(
+            onClick = {},
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.List,
+                "Back",
+                Modifier.size(40.dp).padding(top = 8.dp, end = 8.dp)
+            )
+        }
         Column(
             Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFe8f5c4)),
+                .fillMaxWidth().fillMaxHeight(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 "Top best schools",
                 modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-                color = Color.Blue,
+                color = Color.Black,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 style = TextStyle(
                     fontSize = 24.sp,
                     shadow = Shadow(
-                        color = Color.Gray, offset = offset, blurRadius = 3f
+                        color = Color(0xFF838481), offset = offset, blurRadius = 3f
                     )
                 )
             )
-            NameCardList(schools = schoolList, onClick = { onItemClick() })
+            if (schoolList.isNullOrEmpty()) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                ) {
+                    Text(
+                        "No schools found",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.Black,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            } else {
+                NameCardList(schools = schoolList, onClick = onItemClick)
+            }
         }
         FloatingActionButton(
-            onClick = {onFloatingActionClick() },
+            onClick = { onFloatingActionClick() },
+            backgroundColor = Color(0xFF6F4E37),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(16.dp),
+            contentColor = Color.White
         ) {
             Icon(Icons.Default.Add, contentDescription = "Add")
         }
