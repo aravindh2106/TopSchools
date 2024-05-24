@@ -1,20 +1,25 @@
 package screens.addschooldetails
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,79 +28,164 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import database.SchoolDao
 
-data object AddSchoolDetailsScreen : Screen {
+data class AddSchoolDetailsScreen(val schoolDao: SchoolDao) : Screen {
     @Composable
     override fun Content() {
-        AddSchoolDetails()
+        val navigator = LocalNavigator.currentOrThrow
+        AddSchoolDetails(schoolDao, onBackClick = { navigator.pop() })
     }
 }
 
 @Composable
-fun AddSchoolDetails() {
-    val textState1 = remember { mutableStateOf("") }
-    val textState2 = remember { mutableStateOf("") }
-    val textState3 = remember { mutableStateOf("") }
+fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
+    val addSchoolDetailsScreenModel = remember { AddSchoolDetailsScreenModel(schoolDao) }
+    val schoolView = addSchoolDetailsScreenModel.schoolView.collectAsState().value
+    val schoolErrorView = addSchoolDetailsScreenModel.schoolErrorView.collectAsState().value
+    val isSuccess = addSchoolDetailsScreenModel.isSuccess.collectAsState().value
     val offset = Offset(5.0f, 10.0f)
-    Column(
-        Modifier
-            .fillMaxWidth().fillMaxHeight(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-
-        Text(
-            "Fill the school details",
-            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-            color = Color.Blue,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            style = TextStyle(
-                fontSize = 24.sp,
-                shadow = Shadow(
-                    color = Color.Gray, offset = offset, blurRadius = 3f
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+        ) {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+        }
+        Column(
+            Modifier
+                .fillMaxWidth().fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Fill the school details",
+                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                color = Color.Blue,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    shadow = Shadow(
+                        color = Color.Gray, offset = offset, blurRadius = 3f
+                    )
                 )
             )
-        )
 
-        OutlinedTextField(
-            value = textState1.value,
-            onValueChange = { textState1.value = it },
-            placeholder = { Text(text = "School name") },
-            modifier = Modifier
-                .padding(8.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-        OutlinedTextField(
-            value = textState2.value,
-            onValueChange = { textState2.value = it },
-            placeholder = { Text(text = "Description") },
-            modifier = Modifier
-                .padding(8.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-        OutlinedTextField(
-            value = textState3.value,
-            onValueChange = { textState3.value = it },
-            placeholder = { Text(text = "City") },
-            modifier = Modifier
-                .padding(8.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-
-        Button(
-            onClick = {
-
-            },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color(0xFFe8f5c4), // Set the background color
-                contentColor = Color.Black   // Set the text color
+            OutlinedTextField(
+                value = schoolView.schoolName ?: "",
+                onValueChange = {
+                    if (schoolErrorView.isSchoolNameError) {
+                        addSchoolDetailsScreenModel.updateErrorState(
+                            schoolErrorView.copy(
+                                isSchoolNameError = false
+                            )
+                        )
+                    }
+                    addSchoolDetailsScreenModel.updateData(schoolView.copy(schoolName = it))
+                },
+                placeholder = { Text(text = "School name") },
+                modifier = Modifier
+                    .padding(8.dp),
+                trailingIcon = {
+                    if (schoolErrorView.isSchoolNameError) {
+                        Icon(Icons.Filled.Info, "Error", tint = MaterialTheme.colors.error)
+                    }
+                },
+                isError = schoolErrorView.isSchoolNameError
             )
-        ) {
-            Text("SAVE",fontWeight = FontWeight.Bold, fontSize = 24.sp,)
+            if (schoolErrorView.isSchoolNameError) {
+                Text(
+                    textAlign = TextAlign.End,
+                    text = schoolErrorView.schoolNameError!!,
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.body1,
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            OutlinedTextField(
+                value = schoolView.description ?: "",
+                onValueChange = {
+                    if (schoolErrorView.isDescriptionNameError) {
+                        addSchoolDetailsScreenModel.updateErrorState(
+                            schoolErrorView.copy(
+                                isDescriptionNameError = false
+                            )
+                        )
+                    }
+                    addSchoolDetailsScreenModel.updateData(schoolView.copy(description = it))
+                },
+                placeholder = { Text(text = "Description") },
+                trailingIcon = {
+                    if (schoolErrorView.isDescriptionNameError) {
+                        Icon(Icons.Filled.Info, "Error", tint = MaterialTheme.colors.error)
+                    }
+                },
+                isError = schoolErrorView.isDescriptionNameError,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
+            if (schoolErrorView.isDescriptionNameError) {
+                Text(
+                    textAlign = TextAlign.End,
+                    text = schoolErrorView.descriptionError!!,
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.body1,
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            OutlinedTextField(
+                value = schoolView.city ?: "",
+                onValueChange = {
+                    if (schoolErrorView.isCityNameError) {
+                        addSchoolDetailsScreenModel.updateErrorState(
+                            schoolErrorView.copy(
+                                isCityNameError = false
+                            )
+                        )
+                    }
+                    addSchoolDetailsScreenModel.updateData(schoolView.copy(city = it))
+                },
+                placeholder = { Text(text = "City") },
+                modifier = Modifier
+                    .padding(8.dp),
+                trailingIcon = {
+                    if (schoolErrorView.isCityNameError) {
+                        Icon(Icons.Filled.Info, "Error", tint = MaterialTheme.colors.error)
+                    }
+                },
+                isError = schoolErrorView.isCityNameError
+            )
+            if (schoolErrorView.isCityNameError) {
+                Text(
+                    textAlign = TextAlign.End,
+                    text = schoolErrorView.cityError!!,
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.body1,
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+
+            Button(
+                onClick = {
+                    addSchoolDetailsScreenModel.saveSchool()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xFFe8f5c4), // Set the background color
+                    contentColor = Color.Black   // Set the text color
+                )
+            ) {
+                Text("SAVE", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+            }
         }
     }
 }

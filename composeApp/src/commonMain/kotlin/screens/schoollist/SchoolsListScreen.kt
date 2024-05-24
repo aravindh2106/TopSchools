@@ -49,7 +49,7 @@ data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
                 navigator.push(SchoolDetailsScreen)
             },
             onFloatingActionClick = {
-                navigator.push(AddSchoolDetailsScreen)
+                navigator.push(AddSchoolDetailsScreen(schoolDao))
             }
         )
     }
