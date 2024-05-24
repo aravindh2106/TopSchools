@@ -35,6 +35,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import database.School
 import database.SchoolDao
+import screens.addschooldetails.AddSchoolDetailsScreen
 import screens.schooldetails.SchoolDetailsScreen
 
 data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
@@ -46,6 +47,9 @@ data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
             screenModel = schoolListScreenModel,
             onItemClick = {
                 navigator.push(SchoolDetailsScreen)
+            },
+            onFloatingActionClick = {
+                navigator.push(AddSchoolDetailsScreen)
             }
         )
     }
@@ -54,11 +58,11 @@ data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
 @Composable
 fun SchoolList(
     screenModel: SchoolListScreenModel,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    onFloatingActionClick: () -> Unit
 ) {
     val offset = Offset(5.0f, 10.0f)
     val schoolList by screenModel.schools.collectAsState()
-
 
     Box(
         Modifier.fillMaxSize()
@@ -85,7 +89,7 @@ fun SchoolList(
             NameCardList(schools = schoolList, onClick = { onItemClick() })
         }
         FloatingActionButton(
-            onClick = { },
+            onClick = {onFloatingActionClick() },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
