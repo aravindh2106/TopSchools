@@ -12,17 +12,17 @@ import kotlinx.coroutines.flow.Flow
 interface SchoolDao {
 
     @Insert
-   suspend fun insert(school: School)
+    suspend fun insert(school: School)
 
     @Update
     suspend fun update(school: School)
 
-    @Delete
-   suspend fun delete(school: School)
+    @Query("delete from school where id =:schoolId")
+    suspend fun deleteById(schoolId: Int)
 
     @Query("select * from school")
-     fun getAllSchool(): Flow<List<School>>
+    fun getAllSchool(): Flow<List<School>>
 
-     @Query("select * from school where id= :schoolId")
-    suspend fun getById(schoolId:Int): School
+    @Query("select * from school where id= :schoolId")
+    suspend fun getById(schoolId: Int): School
 }
