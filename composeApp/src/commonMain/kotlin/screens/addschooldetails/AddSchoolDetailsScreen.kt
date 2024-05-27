@@ -20,7 +20,6 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
@@ -40,17 +39,22 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import database.SchoolDao
 
-data class AddSchoolDetailsScreen(val schoolDao: SchoolDao) : Screen {
+data class AddSchoolDetailsScreen(val schoolDao: SchoolDao, val selectedItemId: Int? = null) :
+    Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        AddSchoolDetails(schoolDao, onBackClick = { navigator.pop() })
+        AddSchoolDetails(
+            schoolDao,
+            onBackClick = { navigator.pop() },
+            selectedItemId = selectedItemId
+        )
     }
 }
 
 @Composable
-fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
-    val addSchoolDetailsScreenModel = remember { AddSchoolDetailsScreenModel(schoolDao) }
+fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit, selectedItemId: Int?) {
+    val addSchoolDetailsScreenModel = remember { AddSchoolDetailsScreenModel(schoolDao,selectedItemId) }
     val schoolView = addSchoolDetailsScreenModel.schoolView.collectAsState().value
     val schoolErrorView = addSchoolDetailsScreenModel.schoolErrorView.collectAsState().value
     val isSuccess = addSchoolDetailsScreenModel.isSuccess.collectAsState().value
@@ -62,12 +66,17 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
     ) { contentPadding ->
         LaunchedEffect(isSuccess) {
             if (isSuccess) {
+                val message = if (selectedItemId != null) {
+                    "School details successfully updated!"
+                } else {
+                    "School details successfully saved!"
+                }
+
                 onBackClick()
                 snackbarHostState.showSnackbar(
-                    message = "School details successfully saved!",
+                    message = message,
                     duration = SnackbarDuration.Short
                 )
-
             }
         }
         Box(
@@ -86,6 +95,7 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
                     .fillMaxWidth().fillMaxHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 Text(
                     "Fill the school details",
                     modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
@@ -116,7 +126,7 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
                     },
                     isError = schoolErrorView.isSchoolNameError,
 
-                )
+                    )
                 if (schoolErrorView.isSchoolNameError) {
                     Text(
                         textAlign = TextAlign.End,
@@ -191,17 +201,20 @@ fun AddSchoolDetails(schoolDao: SchoolDao, onBackClick: () -> Unit) {
 
                 Button(
                     onClick = {
-                        addSchoolDetailsScreenModel.saveSchool()
+                        addSchoolDetailsScreenModel.saveOrUpdate(selectedItemId)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color(0xFF6F4E37),
                         contentColor = Color.White
                     )
                 ) {
-                    Text("SAVE", fontSize = 24.sp)
+                    var buttonName: String = "SAVE"
+                    if (selectedItemId != null) {
+                        buttonName = "UPDATE"
+                    }
+                    Text(buttonName, fontSize = 24.sp)
                 }
             }
         }
     }
-
 }

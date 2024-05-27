@@ -8,5 +8,5 @@ data class School(
     val schoolName: String,
     val description: String,
     val city: String,
-    @PrimaryKey(autoGenerate = true) val id: Int = 0
+    @PrimaryKey val id: Int
 )

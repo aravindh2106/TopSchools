@@ -1,6 +1,5 @@
 package screens.schoollist
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,7 +46,6 @@ import database.School
 import database.SchoolDao
 import org.jetbrains.compose.resources.painterResource
 import screens.addschooldetails.AddSchoolDetailsScreen
-import screens.schooldetails.SchoolDetailsScreen
 import topschools.composeapp.generated.resources.Res
 import topschools.composeapp.generated.resources.undraw_empty_re_opql
 
@@ -59,7 +57,7 @@ data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
         SchoolList(
             screenModel = schoolListScreenModel,
             onItemClick = {
-                navigator.push(SchoolDetailsScreen)
+                navigator.push(AddSchoolDetailsScreen(schoolDao,it))
             },
             onFloatingActionClick = {
                 navigator.push(AddSchoolDetailsScreen(schoolDao))
@@ -71,7 +69,7 @@ data class SchoolListScreen(val schoolDao: SchoolDao) : Screen {
 @Composable
 fun SchoolList(
     screenModel: SchoolListScreenModel,
-    onItemClick: () -> Unit,
+    onItemClick: (Int) -> Unit,
     onFloatingActionClick: () -> Unit
 ) {
     val offset = Offset(5.0f, 10.0f)
@@ -112,7 +110,9 @@ fun SchoolList(
             if (schoolList.isNullOrEmpty()) {
                 NoDataCard()
             } else {
-                NameCardList(schools = schoolList, onClick = onItemClick)
+                NameCardList(schools = schoolList, onClick = {
+                    onItemClick(it)
+                })
             }
         }
         FloatingActionButton(
@@ -189,10 +189,10 @@ fun NoDataCard() {
 }
 
 @Composable
-fun NameCardList(schools: List<School>, onClick: () -> Unit) {
+fun NameCardList(schools: List<School>, onClick: (Int) -> Unit) {
     LazyColumn {
         items(schools) { school ->
-            CardItem(name = school.schoolName, onClick = { onClick() })
+            CardItem(name = school.schoolName, onClick = { onClick(school.id) })
         }
     }
 }

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5b221e73eb98d730c840cedee33ea607",
+    "identityHash": "651c1e52c9127198ec9c840cad1c05ee",
     "entities": [
       {
         "tableName": "School",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`schoolName` TEXT NOT NULL, `description` TEXT NOT NULL, `city` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`schoolName` TEXT NOT NULL, `description` TEXT NOT NULL, `city` TEXT NOT NULL, `id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "schoolName",
@@ -34,7 +34,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
@@ -43,7 +43,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b221e73eb98d730c840cedee33ea607')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '651c1e52c9127198ec9c840cad1c05ee')"
     ]
   }
 }
