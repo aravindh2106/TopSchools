@@ -17,6 +17,7 @@ class SchoolListScreenModel(private val schoolDao: SchoolDao) : ScreenModel {
     val hasRemoved: StateFlow<Boolean> = _hasRemoved
 
     fun removeSchool(schoolId: Int) {
+        _hasRemoved.value = true
         screenModelScope.launch {
             schoolDao.deleteById(schoolId)
         }

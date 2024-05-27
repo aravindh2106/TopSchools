@@ -23,7 +23,9 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -89,63 +91,70 @@ fun SchoolList(
     val schoolList by screenModel.schools.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val hasRemovedSchool = screenModel.hasRemoved.collectAsState().value
-    LaunchedEffect(hasRemovedSchool) {
-        if (hasRemovedSchool) {
-            snackbarHostState.showSnackbar(
-                message = "School Removed successfully",
-                duration = SnackbarDuration.Short
-            )
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
-    }
-    Box(
-        Modifier.fillMaxSize().background(Color(0xFFFED8B1))
-    ) {
-        IconButton(
-            onClick = {},
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.List,
-                "Back",
-                Modifier.size(40.dp).padding(top = 8.dp, end = 8.dp)
-            )
-        }
-        Column(
-            Modifier
-                .fillMaxWidth().fillMaxHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "Top best schools",
-                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-                color = Color.Black,
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold,
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    shadow = Shadow(
-                        color = Color(0xFF838481), offset = offset, blurRadius = 3f
-                    )
+    ) { contentPadding ->
+        LaunchedEffect(hasRemovedSchool) {
+            if (hasRemovedSchool) {
+                snackbarHostState.showSnackbar(
+                    message = "School Removed successfully",
+                    duration = SnackbarDuration.Short
                 )
-            )
-            if (schoolList.isNullOrEmpty()) {
-                NoDataCard()
-            } else {
-                NameCardList(schools = schoolList, screenModel = screenModel, onClick = {
-                    onItemClick(it)
-                })
             }
         }
-        FloatingActionButton(
-            onClick = { onFloatingActionClick() },
-            backgroundColor = Color(0xFF6F4E37),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            contentColor = Color.White
+
+        Box(
+            Modifier.fillMaxSize().background(Color(0xFFFED8B1))
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
+            IconButton(
+                onClick = {},
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.List,
+                    "Back",
+                    Modifier.size(40.dp).padding(top = 8.dp, end = 8.dp)
+                )
+            }
+            Column(
+                Modifier
+                    .fillMaxWidth().fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Top best schools",
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                    color = Color.Black,
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        shadow = Shadow(
+                            color = Color(0xFF838481), offset = offset, blurRadius = 3f
+                        )
+                    )
+                )
+                if (schoolList.isNullOrEmpty()) {
+                    NoDataCard()
+                } else {
+                    NameCardList(schools = schoolList, screenModel = screenModel, onClick = {
+                        onItemClick(it)
+                    })
+                }
+            }
+            FloatingActionButton(
+                onClick = { onFloatingActionClick() },
+                backgroundColor = Color(0xFF6F4E37),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
         }
     }
 }
@@ -296,3 +305,4 @@ fun SchoolItem(
         }
     }
 }
+
