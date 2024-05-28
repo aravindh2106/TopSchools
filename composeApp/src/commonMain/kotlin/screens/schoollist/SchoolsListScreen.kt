@@ -268,7 +268,7 @@ fun SchoolItem(
         elevation = 4.dp,
         modifier = Modifier.onSizeChanged {
             itemHeight = with(density) { it.height.toDp() }
-        }.fillMaxWidth().padding(8.dp).clickable { onItemCLick() }
+        }.fillMaxWidth().padding(8.dp)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth().pointerInput(true) {
@@ -276,6 +276,9 @@ fun SchoolItem(
                     onLongPress = {
                         isContextMenuVisible = true
                         pressOffSet = DpOffset(it.x.toDp(), it.y.toDp())
+                    },
+                    onPress = {
+                        onItemCLick()
                     }
                 )
             }
